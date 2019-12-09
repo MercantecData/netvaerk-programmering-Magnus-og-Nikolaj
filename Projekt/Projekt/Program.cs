@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Projekt
 {
@@ -6,7 +7,12 @@ namespace Projekt
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Network!");
+            Console.WriteLine("Hello World!");
+            var text = Console.ReadLine();
+            text = "æøå";
+            Console.WriteLine(Encoding.ASCII.GetBytes(text));
+            Console.WriteLine(Encoding.UTF8.GetBytes(text));
+
         }
     }
 }
