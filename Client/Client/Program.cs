@@ -8,8 +8,8 @@ namespace Client
 {
     class Program
     {
-        public static Int32 port;
-        public static string ip;
+        public static Int32 port = 18100;
+        public static string ip = "127.0.0.1";
 
         static void Main(string[] args)
         {
@@ -36,11 +36,13 @@ namespace Client
                     TcpClient client = new TcpClient(ip, port);
 
                     // Sending your username to the server
+                    Output.WriteLine(ConsoleColor.Green, "Connected");
                     string username = Input.ReadString("Username:");
                     byte[] buffer = Encoding.UTF8.GetBytes(username);
                     client.GetStream().Write(buffer, 0, buffer.Length);
                     
                     // Closing the tcp stream
+                    client.GetStream().Close();
                     client.Close();
                 }
                 catch (Exception)
@@ -53,10 +55,28 @@ namespace Client
 
             }
 
-            void Users()
+            void Users() // command:onlineusers
             {
+                // Client Sending a command
+                TcpClient client = new TcpClient(ip, port);
+                byte[] buffer = Encoding.UTF8.GetBytes("command:onlineusers");
+                client.GetStream().Write(buffer, 0, buffer.Length);
+
                 Console.Clear();
                 Output.WriteLine(ConsoleColor.Green, "Online Users");
+
+                byte[] bufferResponse = new byte[256];
+                int read = -1;
+                if ((read = client.GetStream().Read(bufferResponse, 0, bufferResponse.Length)) > 0 )
+                {
+                    string message2 = Encoding.UTF8.GetString(bufferResponse, 0, read);
+                    Console.WriteLine(message2);
+                }
+                client.GetStream().Close();
+                client.Close();
+
+
+
                 Console.ReadLine();
                 Menu();
 
@@ -73,8 +93,6 @@ namespace Client
             }
 
             Menu();
-
         }
-
     }
 }

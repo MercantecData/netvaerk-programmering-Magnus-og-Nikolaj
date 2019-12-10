@@ -29,23 +29,30 @@ namespace Server
             {
                 // Listening on port 18100 and if there is any variation then it will detect it.
                 byte[] buffer = new byte[256];
-                int read;
+                int read = -1;
 
                 // While loop that cycles thru every byte
                 while ((read = listener.AcceptTcpClient().GetStream().Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    Console.Clear();
-                    Console.WriteLine("Online Users");
                     string message = Encoding.UTF8.GetString(buffer, 0, read);
-                    Users.Add(message);
-                    foreach (var item in Users)
+                    if (message == "command:onlineusers")
                     {
-                        Console.WriteLine(item);
+                        Console.WriteLine("Sending all users");
+                        byte[] bufferResponse = Encoding.UTF8.GetBytes("Response");
+                        listener.AcceptTcpClient().GetStream().Write(bufferResponse, 0, bufferResponse.Length);
+
+                    } else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Online Users");
+                        Users.Add(message);
+                        foreach (var item in Users)
+                        {
+                            Console.WriteLine(item);
+                        }
                     }
                 }
             }
-
-
         }
     }
 }
