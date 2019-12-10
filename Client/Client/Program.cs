@@ -8,8 +8,8 @@ namespace Client
 {
     class Program
     {
-        public static int port;
-        public static IPAddress ip;
+        public static Int32 port;
+        public static string ip;
 
         static void Main(string[] args)
         {
@@ -29,23 +29,18 @@ namespace Client
                 try
                 {
                     // Ip & Port = Connection
-                    ip = IPAddress.Parse(IpInput);
+                    ip = IpInput;
                     port = PortInput;
-                    IPEndPoint endPoint = new IPEndPoint(ip, port);
 
                     // When Connected get a tcp stream running
-                    TcpClient client = new TcpClient();
-                    client.Connect(endPoint);
-                    NetworkStream stream = client.GetStream();
+                    TcpClient client = new TcpClient(ip, port);
 
                     // Sending your username to the server
-                    // string username = Console.ReadLine();
                     string username = Input.ReadString("Username:");
                     byte[] buffer = Encoding.UTF8.GetBytes(username);
-                    stream.Write(buffer, 0, buffer.Length);
-
+                    client.GetStream().Write(buffer, 0, buffer.Length);
+                    
                     // Closing the tcp stream
-                    stream.Close();
                     client.Close();
                 }
                 catch (Exception)
