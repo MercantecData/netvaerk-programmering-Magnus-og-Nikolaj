@@ -13,10 +13,10 @@ namespace Server
             // Ip & Port = Connection
             int port = 18100;
             IPAddress ip = IPAddress.Any;
-            IPEndPoint localEndPoint = new IPEndPoint(ip, port);
+            // IPEndPoint localEndPoint = new IPEndPoint(ip, port);
 
             // Listening on port 18100
-            TcpListener listener = new TcpListener(localEndPoint);
+            TcpListener listener = new TcpListener(ip, port);
             listener.Start();
 
             // Title
@@ -28,13 +28,11 @@ namespace Server
             while (true)
             {
                 // Listening on port 18100 and if there is any variation then it will detect it.
-                TcpClient client = listener.AcceptTcpClient();
-                NetworkStream stream = client.GetStream();
                 byte[] buffer = new byte[256];
                 int read;
 
                 // While loop that cycles thru every byte
-                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                while ((read = listener.AcceptTcpClient().GetStream().Read(buffer, 0, buffer.Length)) > 0)
                 {
                     Console.Clear();
                     Console.WriteLine("Online Users");
