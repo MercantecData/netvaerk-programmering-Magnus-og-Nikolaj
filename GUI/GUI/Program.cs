@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading;
+using NetMQ;
+using NetMQ.Sockets;
 using Terminal.Gui;
 
 namespace GUI
@@ -31,17 +34,30 @@ namespace GUI
             var portText = new Label(4, 6, "Port: ");
             var port = new TextField(16, 6, 10, "18100");
             var login = new Button(4, 8, "Login");
-            var cancel = new Button(12, 8, "Cancel");
+            var cancel = new Button(13, 8, "Cancel");
+            var status = new Label(3, 16, "Disconnected");
+            var info = new Label(3, 18, "Press ESC and 9 to activate the menubar");
 
             login.Clicked = () =>
             {
-                win.Add(new Label(3, 16, "Test"));
+                using (var client = new RequestSocket())
+                {
+                    client.Connect("tcp://localhost:18100");
+                    status.Text = "Connected";
+                    string t = Convert.ToString(username.Text);
+                    client.SendFrame(t);
+
+                    string m2 = client.ReceiveFrameString();
+                    status.Text = m2;
+                    client.Disconnect("tcp://localhost:18100");
+                    client.Close();
+                }
             };
 
             cancel.Clicked = () =>
             {
                 username.Text = "";
-                ipaddress.Text = "127.0.0.1";
+                ipaddress.Text = "localhost";
                 port.Text = "18100";
             };
 
@@ -55,7 +71,8 @@ namespace GUI
                 port,
                 login,
                 cancel,
-                new Label(3, 18, "Press ESC and 9 to activate the menubar"));
+                status,
+                info);
 
             Application.Run();
 
