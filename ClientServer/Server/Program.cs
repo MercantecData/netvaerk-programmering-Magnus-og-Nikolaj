@@ -42,10 +42,18 @@ namespace Server
         {
             byte[] buffer = new byte[256];
             string username = "";
+            string decoded = "Error";
             while (true)
             {
-                int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
-                string decoded = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                try
+                {
+                    int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    decoded = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                }
+                catch (Exception)
+                {
+                    return;
+                }
 
                 for (int i = 0; i < usernames.Count; i++)
                 {
@@ -76,9 +84,16 @@ namespace Server
                 }
 
                 byte[] bufferResponse = Encoding.UTF8.GetBytes(response);
-                foreach (TcpClient client in clients)
+                try
                 {
-                    client.GetStream().Write(bufferResponse, 0, bufferResponse.Length);
+                    foreach (TcpClient client in clients)
+                    {
+                        client.GetStream().Write(bufferResponse, 0, bufferResponse.Length);
+                    }
+                }
+                catch (Exception)
+                {
+                    return;
                 }
             }
         }
