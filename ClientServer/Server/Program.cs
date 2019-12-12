@@ -10,6 +10,7 @@ namespace Server
     {
         public static List<TcpClient> clients = new List<TcpClient>();
         public static List<string> log = new List<string>();
+        public static List<List<string>> usernames = new List<List<string>>();
         static void Main(string[] args)
         {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
@@ -32,6 +33,7 @@ namespace Server
                 clients.Add(client);
                 NetworkStream stream = client.GetStream();
                 string ip = Convert.ToString(client.Client.RemoteEndPoint);
+                usernames.Add(new List<string> { ip, "" });
                 AwaitMessage(stream, ip);
                 Console.WriteLine("Client Connected From: " + client.Client.RemoteEndPoint);
             }
@@ -39,10 +41,30 @@ namespace Server
         public static async void AwaitMessage(NetworkStream stream, string ip)
         {
             byte[] buffer = new byte[256];
+            string username = "";
             while (true)
             {
                 int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
-                string message = ip + ": " + Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                string decoded = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+
+                for (int i = 0; i < usernames.Count; i++)
+                {
+                    if (ip == usernames[i][0])
+                    {
+                        if (usernames[i][1] == "")
+                        {
+                            usernames[i][1] = decoded;
+                            username = decoded;
+                        }
+                        else
+                        {
+                            username = usernames[i][1];
+                        }
+                    }
+                }
+                string message = username + ": " + decoded;
+                username = "";
+
                 log.Add(message);
                 Console.WriteLine(message);
 
