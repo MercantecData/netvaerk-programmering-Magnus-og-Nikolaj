@@ -58,6 +58,7 @@ namespace Client
             {
                 int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
                 string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                Console.Clear();
                 Console.WriteLine(message);
             }
         }

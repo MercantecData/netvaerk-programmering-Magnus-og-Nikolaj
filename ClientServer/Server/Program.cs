@@ -19,22 +19,14 @@ namespace Server
 
             AcceptClients(listener);
 
-            bool isRunning = true;
-            while (isRunning)
+            while (true)
             {
-                Console.WriteLine("Write message: ");
-                string text = Console.ReadLine();
-                byte[] buffer = Encoding.UTF8.GetBytes(text);
-                foreach (TcpClient client in clients)
-                {
-                    client.GetStream().Write(buffer, 0, buffer.Length);
-                }
+                continue;
             }
         }
         public static async void AcceptClients(TcpListener listener)
         {
-            bool isRunning = true;
-            while (isRunning)
+            while (true)
             {
                 TcpClient client = await listener.AcceptTcpClientAsync();
                 clients.Add(client);
@@ -45,13 +37,25 @@ namespace Server
         public static async void AwaitMessage(NetworkStream stream)
         {
             byte[] buffer = new byte[256];
-            bool isRunning = true;
-            while (isRunning)
+            while (true)
             {
                 int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
                 string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
                 log.Add(message);
                 Console.WriteLine(message);
+
+                string response = "";
+                foreach (string l in log)
+                {
+                    response += l;
+                    response += "\n";
+                }
+
+                byte[] bufferResponse = Encoding.UTF8.GetBytes(response);
+                foreach (TcpClient client in clients)
+                {
+                    client.GetStream().Write(bufferResponse, 0, bufferResponse.Length);
+                }
             }
         }
     }
