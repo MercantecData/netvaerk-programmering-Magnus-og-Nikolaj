@@ -42,15 +42,17 @@ namespace GUI
             {
                 using (var client = new RequestSocket())
                 {
-                    client.Connect("tcp://localhost:18100");
+                    string ip = Convert.ToString(ipaddress.Text);
+                    string portT = Convert.ToString(port.Text);
+                    client.Connect("tcp://" + ip + ":" + portT);
                     status.Text = "Connected";
-                    string t = Convert.ToString(username.Text);
-                    client.SendFrame(t);
+                    string texting = Convert.ToString(username.Text);
+                    client.SendFrame(texting);
 
                     string m2 = client.ReceiveFrameString();
                     status.Text = m2;
-                    client.Disconnect("tcp://localhost:18100");
-                    client.Close();
+                    client.Disconnect("tcp://" + ip + ":" + portT);
+                    client.Close(); 
                 }
             };
 
