@@ -17,28 +17,26 @@ namespace Client
                 TcpClient client = new TcpClient();
                 while (client.Connected == false)
                 {
-
-                    try
-                    {
-                        client.ConnectAsync("127.0.0.1", 18100);
-                    }
+                    try { client.ConnectAsync("127.0.0.1", 18100); }
                     catch
                     {
                         Console.Clear();
-                        if (counter == 0)
+                        switch (counter)
                         {
-                            Console.WriteLine("Waiting for the server... //");
-                            counter = 1;
-                        }
-                        else if (counter == 1)
-                        {
-                            Console.WriteLine("Waiting for the server... --");
-                            counter = 2;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Waiting for the server... \\\\");
-                            counter = 0;
+                            case 0:
+                                Console.WriteLine("Waiting for the server... //");
+                                counter = 1;
+                                break;
+                            case 1:
+                                Console.WriteLine("Waiting for the server... --");
+                                counter = 2;
+                                break;
+                            case 2:
+                                Console.WriteLine("Waiting for the server... \\\\");
+                                counter = 0;
+                                break;
+                            default:
+                                break;
                         }
                         Thread.Sleep(500);
                     }
@@ -46,7 +44,7 @@ namespace Client
                 NetworkStream stream = client.GetStream();
                 while (true)
                 {
-                    Console.Clear();
+                    // Console.Clear();
                     Console.WriteLine("Connected");
                     AwaitMessage(stream);
                     Console.Write("Message: ");
@@ -55,15 +53,17 @@ namespace Client
                     byte[] buffer = Encoding.UTF8.GetBytes(message);
                     stream.Write(buffer, 0, buffer.Length);
                 }
-                    // client.Close();
             }
 
             async void AwaitMessage(NetworkStream stream)
             {
                 byte[] buffer = new byte[256];
-                int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
-                string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
-                Console.WriteLine(message);
+                while (true)
+                {
+                    int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                    Console.WriteLine(message);
+                }
             }
         }
 
