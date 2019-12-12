@@ -31,16 +31,18 @@ namespace Server
                 TcpClient client = await listener.AcceptTcpClientAsync();
                 clients.Add(client);
                 NetworkStream stream = client.GetStream();
-                AwaitMessage(stream);
+                string ip = Convert.ToString(client.Client.RemoteEndPoint);
+                AwaitMessage(stream, ip);
+                Console.WriteLine("Client Connected From: " + client.Client.RemoteEndPoint);
             }
         }
-        public static async void AwaitMessage(NetworkStream stream)
+        public static async void AwaitMessage(NetworkStream stream, string ip)
         {
             byte[] buffer = new byte[256];
             while (true)
             {
                 int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
-                string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                string message = ip + ": " + Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
                 log.Add(message);
                 Console.WriteLine(message);
 
