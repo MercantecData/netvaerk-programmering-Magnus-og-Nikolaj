@@ -20,8 +20,7 @@ namespace Client
 
                     try
                     {
-                        // client.Connect("172.16.116.211", 18100);
-                        client.ConnectAsync("172.16.116.211", 18100);
+                        client.ConnectAsync("127.0.0.1", 18100);
                     }
                     catch
                     {
@@ -62,7 +61,7 @@ namespace Client
             async void AwaitMessage(NetworkStream stream)
             {
                 byte[] buffer = new byte[256];
-                int numberOfBytes = await stream.ReadAsync(buffer, 0, 256);
+                int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
                 string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
                 Console.WriteLine(message);
             }
