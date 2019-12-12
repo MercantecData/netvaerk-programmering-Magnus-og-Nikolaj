@@ -9,11 +9,8 @@ namespace Server
     class Program
     {
         public static List<TcpClient> clients = new List<TcpClient>();
+        public static List<string> log = new List<string>();
         static void Main(string[] args)
-        {
-            Server();
-        }
-        public static void Server()
         {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             int port = 18100;
@@ -28,13 +25,11 @@ namespace Server
                 Console.WriteLine("Write message: ");
                 string text = Console.ReadLine();
                 byte[] buffer = Encoding.UTF8.GetBytes(text);
-                // stream.Write(buffer, 0, buffer.Length);
                 foreach (TcpClient client in clients)
                 {
                     client.GetStream().Write(buffer, 0, buffer.Length);
                 }
             }
-
         }
         public static async void AcceptClients(TcpListener listener)
         {
@@ -55,6 +50,7 @@ namespace Server
             {
                 int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
                 string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
+                log.Add(message);
                 Console.WriteLine(message);
             }
         }
