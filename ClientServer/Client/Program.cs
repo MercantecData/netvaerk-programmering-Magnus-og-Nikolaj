@@ -20,8 +20,8 @@ namespace Client
 
                     try
                     {
-                        client.Connect("172.16.116.211", 18100);
-                        Console.WriteLine("Connected");
+                        // client.Connect("172.16.116.211", 18100);
+                        client.ConnectAsync("172.16.116.211", 18100);
                     }
                     catch
                     {
@@ -47,15 +47,16 @@ namespace Client
                 NetworkStream stream = client.GetStream();
                 while (true)
                 {
+                    Console.Clear();
+                    Console.WriteLine("Connected");
                     AwaitMessage(stream);
-                    // Console.Clear();
                     Console.Write("Message: ");
                     string message = "";
                     message = Console.ReadLine();
                     byte[] buffer = Encoding.UTF8.GetBytes(message);
                     stream.Write(buffer, 0, buffer.Length);
                 }
-                    client.Close();
+                    // client.Close();
             }
 
             async void AwaitMessage(NetworkStream stream)
