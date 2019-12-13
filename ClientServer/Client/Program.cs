@@ -7,6 +7,7 @@ namespace Client
 {
     class Program
     {
+        private static string username = "";
         static void Main(string[] args)
         {
             int counter = 0;
@@ -38,28 +39,41 @@ namespace Client
                 }
             }
             NetworkStream stream = client.GetStream();
+            int count = 0;
             while (true)
             {
-                // Console.Clear();
                 Console.WriteLine("Connected");
                 AwaitMessage(stream);
-                Console.Write("Message: ");
-                string message = "";
-                message = Console.ReadLine();
+                string message;
+
+                if (count == 0) // First loop
+                {
+                    Console.Write("Username: ");
+                    username = Console.ReadLine();
+                    message = username;
+                    count++;
+                }
+                else
+                {
+                    message = Console.ReadLine();
+                }
                 byte[] buffer = Encoding.UTF8.GetBytes(message);
                 stream.Write(buffer, 0, buffer.Length);
+                // Console.Clear();
+                
             }
 
         }
         public static async void AwaitMessage(NetworkStream stream)
         {
-            byte[] buffer = new byte[256];
+            byte[] buffer = new byte[4096];
             while (true)
             {
                 int numberOfBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
                 string message = Encoding.UTF8.GetString(buffer, 0, numberOfBytes);
                 Console.Clear();
                 Console.WriteLine(message);
+                Console.Write("Write msg as "+username+": ");
             }
         }
 
