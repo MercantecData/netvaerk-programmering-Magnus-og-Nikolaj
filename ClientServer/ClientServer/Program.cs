@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Projekt
+namespace ClientServer
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Network!");
+            Console.WriteLine("Hello World!");
         }
     }
 }
